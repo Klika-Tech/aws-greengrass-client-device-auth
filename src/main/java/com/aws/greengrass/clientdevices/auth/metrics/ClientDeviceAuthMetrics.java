@@ -64,7 +64,6 @@ public class ClientDeviceAuthMetrics {
      * Emit metrics using Metric Factory.
      */
     public void emitMetrics() {
-        // TODO need to call this function on a timer
         List<Metric> retrievedMetrics = collectMetrics();
         for (Metric retrievedMetric : retrievedMetrics) {
             mf.putMetricData(retrievedMetric);
