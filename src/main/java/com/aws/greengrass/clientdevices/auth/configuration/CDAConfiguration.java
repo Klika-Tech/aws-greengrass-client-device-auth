@@ -40,7 +40,7 @@ import static com.aws.greengrass.lifecyclemanager.GreengrassService.RUNTIME_STOR
  * |    |---- certificates: {}
  * |    |---- metrics:
  * |         |---- disableMetrics: "..."
- * |         |---- aggregatePeriod: "..."
+ * |         |---- aggregationPeriodSeconds: "..."
  * |---- runtime
  * |    |---- ca_passphrase: "..."
  * |    |---- certificates:

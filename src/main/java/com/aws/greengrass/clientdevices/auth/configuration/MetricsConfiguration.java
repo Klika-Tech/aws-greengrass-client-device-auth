@@ -15,23 +15,23 @@ import lombok.Getter;
  * |---- configuration
  * |    |---- metrics:
  * |          |---- disableMetrics
- * |          |---- aggregatePeriod
+ * |          |---- aggregationPeriodSeconds
  * </p>
  */
 
 public final class MetricsConfiguration {
     public static final String METRICS_TOPIC = "metrics";
     public static final String DISABLE_METRICS = "disableMetrics";
-    public static final String AGGREGATE_PERIOD = "aggregatePeriod";
+    public static final String AGGREGATION_PERIOD_SECONDS = "aggregationPeriodSeconds";
     public static final int DEFAULT_PERIODIC_AGGREGATE_INTERVAL_SEC = 3_600;
     @Getter
     private boolean disableMetrics;
     @Getter
-    private int aggregatePeriod;
+    private int aggregationPeriodSeconds;
 
-    private MetricsConfiguration(boolean disableMetrics, int aggregatePeriod) {
+    private MetricsConfiguration(boolean disableMetrics, int aggregationPeriodSeconds) {
         this.disableMetrics = disableMetrics;
-        this.aggregatePeriod = aggregatePeriod;
+        this.aggregationPeriodSeconds = aggregationPeriodSeconds;
     }
 
     /**
@@ -55,7 +55,7 @@ public final class MetricsConfiguration {
      */
     public boolean hasChanged(MetricsConfiguration config) {
         return config.isDisableMetrics() != isDisableMetrics()
-                || config.getAggregatePeriod() != getAggregatePeriod();
+                || config.getAggregationPeriodSeconds() != getAggregationPeriodSeconds();
     }
 
     private static boolean getDisableMetricsFlagFromConfiguration(Topics metricsTopic) {
@@ -63,12 +63,12 @@ public final class MetricsConfiguration {
     }
 
     private static int getAggregatePeriodFromConfiguration(Topics metricsTopic) {
-        int aggregatePeriod = Coerce.toInt(metricsTopic.find(AGGREGATE_PERIOD));
+        int aggregationPeriodSeconds = Coerce.toInt(metricsTopic.find(AGGREGATION_PERIOD_SECONDS));
 
-        if (aggregatePeriod <= 0) {
+        if (aggregationPeriodSeconds <= 0) {
             return DEFAULT_PERIODIC_AGGREGATE_INTERVAL_SEC;
         } else {
-            return aggregatePeriod;
+            return aggregationPeriodSeconds;
         }
     }
 }
