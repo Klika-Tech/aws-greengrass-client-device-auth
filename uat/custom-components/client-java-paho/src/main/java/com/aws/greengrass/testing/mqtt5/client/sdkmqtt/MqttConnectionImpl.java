@@ -59,13 +59,12 @@ public class MqttConnectionImpl implements MqttConnection {
         }
     }
 
-    @SuppressWarnings({"PMD.UseTryWithResources", "PMD.AvoidCatchingGenericException"})
     @Override
     public void disconnect(long timeout, int reasonCode) throws MqttException {
         if (!isClosing.getAndSet(true)) {
             try {
                 disconnectAndClose(timeout);
-            } catch (Exception ex) {
+            } catch (org.eclipse.paho.mqttv5.common.MqttException ex) {
                 logger.atError().withThrowable(ex).log("Failed during disconnecting from MQTT broker");
                 throw new MqttException("Could not disconnect", ex);
             }
@@ -111,19 +110,29 @@ public class MqttConnectionImpl implements MqttConnection {
         if (token == null) {
             return null;
         }
-        Integer reasonCode = token.getReasonCodes().length == 0 ? null : token.getReasonCodes()[0];
+        Integer sessionExpiryInterval = null;
+        Boolean isWildcardSubscriptionsAvailable = null;
+        Boolean isSubscriptionIdentifiersAvailable = null;
+        Boolean isSharedSubscriptionAvailable = null;
+        if (token.getResponseProperties() != null) {
+            sessionExpiryInterval = convertLongToInteger(token.getRequestProperties().getSessionExpiryInterval());
+            isWildcardSubscriptionsAvailable = token.getRequestProperties().isWildcardSubscriptionsAvailable();
+            isSubscriptionIdentifiersAvailable = token.getRequestProperties().isSubscriptionIdentifiersAvailable();
+            isSharedSubscriptionAvailable = token.getRequestProperties().isSharedSubscriptionAvailable();
+        }
+        Integer reasonCode = token.getReasonCodes() == null ? null : token.getReasonCodes()[0];
         return new ConnAckInfo(token.getSessionPresent(),
                 reasonCode,
-                convertLongToInteger(token.getRequestProperties().getSessionExpiryInterval()),
+                sessionExpiryInterval,
                 token.getResponseProperties().getReceiveMaximum(),
                 token.getResponseProperties().getMaximumQoS(),
                 token.getResponseProperties().isRetainAvailable(),
                 convertLongToInteger(token.getResponseProperties().getMaximumPacketSize()),
                 token.getResponseProperties().getAssignedClientIdentifier(),
                 token.getResponseProperties().getReasonString(),
-                token.getRequestProperties().isWildcardSubscriptionsAvailable(),
-                token.getRequestProperties().isSubscriptionIdentifiersAvailable(),
-                token.getRequestProperties().isSharedSubscriptionAvailable(),
+                isWildcardSubscriptionsAvailable,
+                isSubscriptionIdentifiersAvailable,
+                isSharedSubscriptionAvailable,
                 token.getResponseProperties().getServerKeepAlive(),
                 token.getResponseProperties().getResponseInfo(),
                 token.getResponseProperties().getServerReference()
