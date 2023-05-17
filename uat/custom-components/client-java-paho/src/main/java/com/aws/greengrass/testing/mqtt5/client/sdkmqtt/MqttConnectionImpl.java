@@ -114,7 +114,7 @@ public class MqttConnectionImpl implements MqttConnection {
         Boolean isWildcardSubscriptionsAvailable = null;
         Boolean isSubscriptionIdentifiersAvailable = null;
         Boolean isSharedSubscriptionAvailable = null;
-        if (token.getResponseProperties() != null) {
+        if (token.getRequestProperties() != null) {
             sessionExpiryInterval = convertLongToInteger(token.getRequestProperties().getSessionExpiryInterval());
             isWildcardSubscriptionsAvailable = token.getRequestProperties().isWildcardSubscriptionsAvailable();
             isSubscriptionIdentifiersAvailable = token.getRequestProperties().isSubscriptionIdentifiersAvailable();
