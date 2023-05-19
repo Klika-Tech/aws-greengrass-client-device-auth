@@ -38,8 +38,11 @@ static void printUsage(const char * prog) {
 static void parseArgs(int argc, char * argv[], std::string & agent_id, std::list<std::string> & addresses, unsigned short & port) {
     int intValue;
     int index;
+#ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+#endif /* _WIN32 */
+
     switch (argc) {
         default:
         case 4:
@@ -66,7 +69,9 @@ static void parseArgs(int argc, char * argv[], std::string & agent_id, std::list
             // no arguments, missing agent_id, error
             throw std::invalid_argument("Invalid number of arguments, expected as least 1\n");
     }
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif /* _WIN32 */
 }
 
 void doAll(int argc, char * argv[]) {
@@ -87,7 +92,9 @@ void doAll(int argc, char * argv[]) {
     glink = link;
     std::signal(SIGINT, handler);
     std::signal(SIGTERM, handler);
+#ifdef SIGQUIT
     std::signal(SIGQUIT, handler);
+#endif
 
     const std::string & reason = link->handleRequests(mqttLib);
 

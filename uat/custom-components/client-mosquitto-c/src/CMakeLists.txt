@@ -55,7 +55,13 @@ set (CLIENT_SRCS
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
+
+if(WIN32)
+set(MOSQUITTO_PATH "C:\\Program Files\\mosquitto\\devel")
+find_library(Mosquitto mosquitto REQUIRED PATHS "${MOSQUITTO_PATH}")
+else()
 pkg_check_modules(Mosquitto IMPORTED_TARGET libmosquitto REQUIRED)
+endif()
 
 
 message(STATUS "Using gRPC ${GRPC_VERSION} via add_subdirectory (FetchContent).")
@@ -94,7 +100,12 @@ GRPC_GENERATE(
 
 
 add_executable(mosquitto-test-client ${CLIENT_SRCS} ${PROTO_SRCS} ${GRPC_SRCS})
+if(WIN32)
+target_link_libraries(mosquitto-test-client PUBLIC ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF} ${Mosquitto} )
+target_include_directories(mosquitto-test-client PUBLIC ${CMAKE_CURRENT_BINARY_DIR} ${MOSQUITTO_PATH})
+else()
 target_link_libraries(mosquitto-test-client PUBLIC ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF} PkgConfig::Mosquitto)
 target_include_directories(mosquitto-test-client PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 install(TARGETS mosquitto-test-client RUNTIME DESTINATION "${CMAKE_INSTALL_SBINDIR}")

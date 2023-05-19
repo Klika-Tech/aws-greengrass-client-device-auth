@@ -1,4 +1,5 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 3.15 FATAL_ERROR)
+
 PROJECT(mosquitto-test-client
     VERSION 0.0.1
     DESCRIPTION "Mosquitto test client"
